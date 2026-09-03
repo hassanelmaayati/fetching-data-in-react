@@ -1,30 +1,56 @@
-
+import WeatherDetails from './components/WeatherDetails/WeatherDetails'
 import WeatherSearch from './components/WeatherSearch/WeatherSearch'
 import * as weatherService from './services/weatherService'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
+export default function App() {
+  const [weather, setWeather] = useState({})
 
+  useEffect(
+    ()=> {
+      async function fetchDfaultData(){
+         const data = await weatherService.show("Sydney")
 
-export default fucntion App() {
+      const weatherCondition = {
+        location: data.location.name,
+        temperature: data.current.temp_c,
+        condition: data.current.condition.text
+      }
 
-const [weather, setWeather] = useState({});
-const fetchData=async()=>{
-const data=await weatherService.show('Manama')
+      setWeather(weatherCondition)
+      }
 
-console.log('weather data', data)
-}
+      fetchDfaultData()
 
+    }, []
+  )
+  useEffect(
+    ()=>{
+      console.log('Weather has updated!!!!', weather)
+    }, [weather]
+  )
+
+  const fetchData = async (city) => {
+    const data = await weatherService.show(city)
+
+    const weatherCondition = {
+      location: data.location.name,
+      temperature: data.current.temp_c,
+      condition: data.current.condition.text
+    }
+
+    setWeather(weatherCondition)
+  }
+
+  if(!weather.condition && !weather.temperature && !weather.location){
+    return <h1>Loading....</h1>
+  }
 
   return (
-<main>
-
-  <h1>weather API Example</h1>
-<button onClick={fetchData}>Get weather for the city</button>
-<weatherSearch/>
-
-
-</main>
-  );
+    <main>
+      <h1>Weather API Example</h1>
+      <WeatherSearch fetchData={fetchData}/>
+      <WeatherDetails weather={weather}/>
+    </main>
+  )
 }
-
-export default App
