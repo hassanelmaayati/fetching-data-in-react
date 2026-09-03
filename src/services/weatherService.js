@@ -18,6 +18,6 @@ const show = async (city) => {
 
 }
 
-export ()
+export{
   show
 }
